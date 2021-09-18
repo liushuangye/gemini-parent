@@ -21,17 +21,15 @@ public class DeployController extends BaseController {
     @Autowired
     private DeployService deployService;
 
-    @GetMapping(path = "listDef")
+    @PostMapping("listRelease")
     @ApiOperation(value = "查询流程定义", notes = "查询流程定义")
-//    @ApiImplicitParams({})
-    public RestMsg listDef() {
+    public RestMsg listRelease(@RequestBody Map<String,Object> queryparam) {
         RestMsg restMsg = new RestMsg();
-
         try {
-            List defList = deployService.listDeploy();
-            restMsg = RestMsg.success("查询成功", defList);
+            Map<String, Object> result = deployService.listRelease(queryparam);
+            restMsg = RestMsg.success("查询成功", result);
         } catch (Exception e) {
-            restMsg = RestMsg.fail("删除失败:" + e.getMessage(),null);
+            restMsg = RestMsg.fail("查询失败", e.getMessage());
         }
         return restMsg;
     }

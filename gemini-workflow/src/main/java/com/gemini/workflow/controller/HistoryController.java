@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zjialin<br>
@@ -27,16 +29,16 @@ public class HistoryController extends BaseController {
     @Autowired
     GeminiHistoryService geminiHistoryService;
 
-    @GetMapping(path = "findByProcessInstanceId")
+    @GetMapping(path = "findHistory")
     @ApiOperation(value = "审查履历查询", notes = "已完成的、未完成的都会查出来，未完成的endTime为空")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "processInstanceId", value = "流程实例Id", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "dataUuid", value = "业务数据uuid", dataType = "String", paramType = "query"),
     })
-    public RestMsg findByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId) {
+    public RestMsg findHistory(@RequestParam("dataUuid") String processInstanceId) {
         List resultList = new ArrayList<>();
         RestMsg restMsg = new RestMsg();
         try {
-            resultList = geminiHistoryService.findByProcessInstanceId(processInstanceId);
+            resultList = geminiHistoryService.findHistory(processInstanceId);
             restMsg = RestMsg.success("查询成功", resultList);
         } catch (Exception e) {
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
@@ -44,18 +46,18 @@ public class HistoryController extends BaseController {
         }
         return restMsg;
     }
-    @GetMapping(path = "getTaskVariables")
+    @GetMapping(path = "getHistoryTaskVariables")
     @ApiOperation(value = "历史任务快照查询", notes = "即历史任务的流程变量")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "processInstanceId", value = "流程实例Id", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "executionId", value = "流程实例Id", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "taskId", value = "流程实例Id", dataType = "String", paramType = "query"),
     })
-    public RestMsg getTaskVariables(@RequestParam("processInstanceId") String processInstanceId,@RequestParam("executionId") String executionId,@RequestParam("taskId") String taskId) {
+    public RestMsg getHistoryTaskVariables(@RequestParam("processInstanceId") String processInstanceId,@RequestParam("executionId") String executionId,@RequestParam("taskId") String taskId) {
         List resultList = new ArrayList<>();
         RestMsg restMsg = new RestMsg();
         try {
-            resultList = geminiHistoryService.getTaskVariables(processInstanceId,executionId,taskId);
+            resultList = geminiHistoryService.getHistoryTaskVariables(processInstanceId,executionId,taskId);
             restMsg = RestMsg.success("查询成功", resultList);
         } catch (Exception e) {
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);

@@ -16,6 +16,8 @@ public interface DefineService {
     public BpmnModel getBpmnModelById(String modelId) throws IOException;
     /** 导入流程模型 */
     public void importBpmnModel(ModelImportDTO modelImportDTO) throws Exception;
+    /** 删除流程模型 */
+    public void deleteModel(String modelId) throws Exception;
 //
 //    /** 获取所有流程模型 */
 //    public List<BpmnModel> getAllBpmnModel(String modelId) throws IOException;

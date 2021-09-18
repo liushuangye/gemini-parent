@@ -76,6 +76,13 @@
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-svg-dom</artifactId>
             <version>1.7</version>
+            <!-- xalan这里是2.6.0，activiti 5.22.0 的画图工具是2.7.2-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>xalan</groupId>-->
+                    <!--<artifactId>xalan</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>

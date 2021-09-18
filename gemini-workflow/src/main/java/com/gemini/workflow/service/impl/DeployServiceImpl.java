@@ -1,5 +1,6 @@
 package com.gemini.workflow.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,31 +9,50 @@ import com.gemini.workflow.service.BaseService;
 import com.gemini.workflow.service.DeployService;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
-import org.activiti.engine.repository.DeploymentBuilder;
-import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.repository.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class DeployServiceImpl extends BaseService implements DeployService {
 
     @Override
-    public List listDeploy() {
-        JSONArray defArray = new JSONArray();
+    public Map<String, Object> listRelease(Map<String,Object> queryparam) {
+        String processDefinitionKey = (String)queryparam.get("processDefinitionKey");
+        Integer pageNum = (Integer) queryparam.get("pageNum");
+        if(pageNum == null) {
+            pageNum = 0;
+        }
+        // 每页显示条数
+        Integer pageSize = (Integer) queryparam.get("pageSize");
 
-        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().orderByProcessDefinitionVersion().asc().list();
+        if(pageSize == null) {
+            pageSize = 30;
+        }
+        //接口返回结果
+        JSONObject result = new JSONObject();
+        JSONArray modelArray = new JSONArray();
+
+        //查询结果
+        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
+        if(StringUtils.isNotEmpty(processDefinitionKey))processDefinitionQuery = processDefinitionQuery.processDefinitionKeyLike("%"+processDefinitionKey+"%");
+        long total = processDefinitionQuery.count();
+        //key升序、version降序
+        List<ProcessDefinition> list = processDefinitionQuery
+                                        .orderByProcessDefinitionKey().asc()
+                                        .orderByProcessDefinitionVersion().desc()
+                                        .listPage((pageNum - 1) * pageSize, pageSize);
+
 
         Map<String,ProcessDefinition> map = new HashMap<String,ProcessDefinition>();
 
         if(list != null && list.size() >0){
             for(ProcessDefinition pd:list){
-                map.put(pd.getKey(), pd);
+                map.put(pd.getId(), pd);
             }
         }
         List<ProcessDefinition> pdList = new ArrayList<ProcessDefinition>(map.values());
@@ -41,13 +61,17 @@ public class DeployServiceImpl extends BaseService implements DeployService {
             jsonObject.put("id",processDefinition.getId());
             jsonObject.put("key",processDefinition.getKey());
             jsonObject.put("name",processDefinition.getName());
-            jsonObject.put("deploymentId",processDefinition.getDeploymentId());
-            jsonObject.put("resourceName",processDefinition.getResourceName());
             jsonObject.put("version",processDefinition.getVersion());
+            jsonObject.put("resourceName",processDefinition.getResourceName());
+            jsonObject.put("deploymentId",processDefinition.getDeploymentId());
+            Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(processDefinition.getDeploymentId()).singleResult();
+            jsonObject.put("deploymentTime",DateUtil.format(deployment.getDeploymentTime(),"yyyy-MM-dd HH:mm:ss"));//发布时间
 
-            defArray.add(jsonObject);
+            modelArray.add(jsonObject);
         }
-        return defArray;
+        result.put("records",modelArray);
+        result.put("total",total);
+        return result;
     }
 
     @Override

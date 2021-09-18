@@ -45,7 +45,7 @@ public class DefineController extends BaseController {
             Map<String, Object> result = defineService.listModel(queryparam);
             restMsg = RestMsg.success("查询成功", result);
         } catch (Exception e) {
-            restMsg = RestMsg.fail("删除失败", e.getMessage());
+            restMsg = RestMsg.fail("查询失败", e.getMessage());
         }
         return restMsg;
     }
@@ -137,6 +137,19 @@ public class DefineController extends BaseController {
             restMsg = RestMsg.success("导入成功", "");
         }catch (Exception e){
             restMsg = RestMsg.fail("导入失败:" + e.getMessage(),null);
+        }
+        return restMsg;
+    }
+    @DeleteMapping(value = "/deleteModel/{modelId}")
+    @ApiOperation(value = "删除流程定义", notes = "删除流程定义")
+    @ResponseBody
+    public RestMsg deleteModel(@PathVariable("modelId") String modelId) {
+        RestMsg restMsg = new RestMsg();
+        try{
+            defineService.deleteModel(modelId);
+            restMsg = RestMsg.success("删除成功", "");
+        }catch (Exception e){
+            restMsg = RestMsg.fail("删除失败:" + e.getMessage(),null);
         }
         return restMsg;
     }

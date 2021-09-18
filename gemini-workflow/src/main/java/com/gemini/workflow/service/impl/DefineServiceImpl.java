@@ -13,11 +13,9 @@ import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
-import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.DeploymentBuilder;
-import org.activiti.engine.repository.Model;
-import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.repository.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +38,7 @@ import java.util.Map;
 public class DefineServiceImpl extends BaseService implements DefineService {
     @Override
     public Map<String, Object> listModel(Map<String,Object> queryparam) throws Exception{
+        String modelName = (String)queryparam.get("modelName");
         Integer pageNum = (Integer) queryparam.get("pageNum");
         if(pageNum == null) {
             pageNum = 0;
@@ -55,8 +54,10 @@ public class DefineServiceImpl extends BaseService implements DefineService {
         JSONArray modelArray = new JSONArray();
 
         //查询结果
-        long total = repositoryService.createModelQuery().count();
-        List<Model> list = repositoryService.createModelQuery().listPage((pageNum - 1) * pageSize, pageSize);
+        ModelQuery modelQuery = repositoryService.createModelQuery();
+        if(StringUtils.isNotEmpty(modelName))modelQuery = modelQuery.modelNameLike("%"+modelName+"%");
+        long total = modelQuery.count();
+        List<Model> list = modelQuery.listPage((pageNum - 1) * pageSize, pageSize);
 
 
         Map<String,Model> map = new HashMap<String,Model>();
@@ -137,5 +138,11 @@ public class DefineServiceImpl extends BaseService implements DefineService {
 //            model.setDeploymentId(deployment.getId());
             repositoryService.saveModel(model);
         }
+
+    }
+
+    @Override
+    public void deleteModel(String modelId) throws Exception {
+        repositoryService.deleteModel(modelId);
     }
 }
