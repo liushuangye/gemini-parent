@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gemini.toolkit.basedata.mapper.CustomizeMapper">
+    
+    <select id="getResults" resultType="Map">
+		${sqlText}
+    </select>
+
+    <select id="getMaxStaffId" resultType="String">
+		SELECT MAX(STAFF_ID) MEET_NO FROM T_STAFF T 
+    </select>
+    
+    
+    <update id="bacthUpdate" parameterType="list">
+	    <foreach item="item" collection="sqlList" separator=";" >
+	    	${item}
+	    </foreach>
+	    
+    </update>
+    
+    <update id="bacthUpdateOracle">
+	    	${sql}
+    </update>
+    
+    <insert id="bacthInsert" parameterType="list">
+	    <foreach item="item" collection="sqlList" separator=";" >
+	    	${item}
+	    </foreach>
+	    
+    </insert>
+    
+    <insert id="bacthInsertOracle">
+	    	${sql}
+    </insert>
+    
+    <select id="getUserId" resultType="String">
+		SELECT USER_ID FROM T_STAFF LEFT JOIN T_USER ON T_STAFF.STAFF_ID = T_USER.STAFF_ID
+		 where t_staff.mobile_phone = #{mobilePhone} and t_staff.staff_name = #{staffName}
+    </select>
+    
+        <select id="getStaffId" resultType="String">
+		SELECT STAFF_ID FROM T_STAFF 
+		 where mobile_phone = #{mobilePhone} and staff_name = #{staffName}
+		 and delete_flg = '0'
+    </select>
+    
+    <select id="getRuleValue" resultType="String">
+		select
+		    t_billno_rule_value.curr_value 
+		from
+		    t_billno_rule 
+		    left join t_billno_rule_value 
+	        on t_billno_rule.id = t_billno_rule_value.billno_rule_id 
+		where
+		    t_billno_rule.billno_rule_code = 'T_SPONS'
+    </select>
+    
+    <update id="updateRuleValue" >
+	update t_billno_rule_value 
+	set
+	    curr_value = #{currValue} ,
+	    update_key = update_key + 1 ,
+	    update_date_time = #{dateTime} ,
+	    update_user_id = #{userId}
+	where
+	    billno_rule_id = ( 
+	        select
+	            t_billno_rule_value.billno_rule_id 
+	        from
+	            t_billno_rule 
+	            left join t_billno_rule_value 
+	                on t_billno_rule.id = t_billno_rule_value.billno_rule_id 
+	        where
+	            t_billno_rule.billno_rule_code = 'T_SPONS'
+	    )
+
+    </update>
+    
+    <select id="getSpons" resultType="String">
+        select
+            spons_id
+        from
+            t_spons
+        where
+            spons_name = #{sponsName}
+    </select>
+
+
+
+    
+    <select id="getOrganizeResults" resultType="Map">
+		select
+		    organize_id , organize_name , organize_type , organize_prnt_id , PREPARATION1 , PREPARATION2, PREPARATION3
+		    , PREPARATION4 , PREPARATION5 , PREPARATION6 , PREPARATION7 , PREPARATION8 , PREPARATION9 , PREPARATION10 , organize_code
+		    , study_nature , zip_code , contact_emp_id , contact_phone , contact_email , organize_pic , using_status , his_dept_code 
+		from
+		    t_organize 
+		where
+		    organize_id = #{organizeId}
+    </select>
+	<select id="getStaffIds" resultType="java.lang.String">
+		SELECT STAFF_ID FROM T_STAFF
+		 where staff_name = #{staffName}
+		 and delete_flg = '0'
+	</select>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gemini.toolkit.sysparam.mapper.TCodeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gemini.toolkit.sysparam.entity.TCodeEntity">
+        <result column="preparation1" property="preparation1" />
+        <result column="preparation2" property="preparation2" />
+        <result column="preparation3" property="preparation3" />
+        <result column="preparation4" property="preparation4" />
+        <result column="preparation5" property="preparation5" />
+        <result column="preparation6" property="preparation6" />
+        <result column="preparation7" property="preparation7" />
+        <result column="preparation8" property="preparation8" />
+        <result column="preparation9" property="preparation9" />
+        <result column="preparation10" property="preparation10" />
+        <result column="id" property="id" />
+        <result column="uuid" property="uuid" />
+        <result column="code_type" property="codeType" />
+        <result column="code_id" property="codeId" />
+        <result column="code_name" property="codeName" />
+        <result column="code_rnm" property="codeRnm" />
+        <result column="code_value1" property="codeValue1" />
+        <result column="code_value2" property="codeValue2" />
+        <result column="code_value3" property="codeValue3" />
+        <result column="code_value4" property="codeValue4" />
+        <result column="code_value5" property="codeValue5" />
+        <result column="code_remark" property="codeRemark" />
+        <result column="update_key" property="updateKey" />
+        <result column="delete_flg" property="deleteFlg" />
+        <result column="create_date_time" property="createDateTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="update_date_time" property="updateDateTime" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="display_order" property="displayOrder" />
+        <result column="bus_id" property="busId" />
+    </resultMap>
+    
+    <select id="getTCode" resultType="com.gemini.toolkit.sysparam.entity.TCodeEntity">
+        select
+    		<include refid="Base_Column_List"></include>
+  		from
+  			t_code
+  		where
+  			bus_id = #{busId}
+  			and delete_flg = '0'
+  			and code_type = 'SYS_PARA'
+  		order by display_order
+    </select>
+    
+    <select id="getTCodeAll" resultType="com.gemini.toolkit.sysparam.entity.TCodeEntity">
+        select
+    		<include refid="Base_Column_List"></include>
+  		from
+  			t_code
+  		where
+  			bus_id in ${busId}
+  			and delete_flg = '0'
+  			and code_type = 'SYS_PARA'
+  		order by bus_id, display_order
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        preparation1,
+        preparation2,
+        preparation3,
+        preparation4,
+        preparation5,
+        preparation6,
+        preparation7,
+        preparation8,
+        preparation9,
+        preparation10,
+        id,
+        uuid,
+        code_type, code_id, code_name, code_rnm, code_value1, code_value2, code_value3, code_value4, code_value5, code_remark, update_key, delete_flg, create_date_time, create_user_id, update_date_time, update_user_id, display_order, bus_id
+    </sql>
+
+</mapper>

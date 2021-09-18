@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gemini.toolkit.basedata.mapper.TBasedataImportHisMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gemini.toolkit.basedata.entity.TBasedataImportHisEntity">
+        <result column="preparation1" property="preparation1" />
+        <result column="preparation2" property="preparation2" />
+        <result column="preparation3" property="preparation3" />
+        <result column="preparation4" property="preparation4" />
+        <result column="preparation5" property="preparation5" />
+        <result column="preparation6" property="preparation6" />
+        <result column="preparation7" property="preparation7" />
+        <result column="preparation8" property="preparation8" />
+        <result column="preparation9" property="preparation9" />
+        <result column="preparation10" property="preparation10" />
+        <result column="id" property="id" />
+        <result column="uuid" property="uuid" />
+        
+        <result column="template_type" property="templateType" />
+        <result column="tempalte_name" property="tempalteName" />
+        <result column="state" property="state" />
+        <result column="file_content" property="fileContent" />
+        
+        <result column="update_key" property="updateKey" />
+        <result column="delete_flg" property="deleteFlg" />
+        <result column="create_date_time" property="createDateTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="update_date_time" property="updateDateTime" />
+        <result column="update_user_id" property="updateUserId" />
+    </resultMap>
+    
+    <select id="getTBasedataImportHis" resultType="com.gemini.toolkit.basedata.entity.TBasedataImportHisEntity">
+  		select
+        t_tk_basedata_import_his.id as id,
+        t_tk_basedata_import_his.tempalte_name as tempalte_name,
+    	t_code.code_name as template_type,
+        t_tk_basedata_import_his.create_date_time as create_date_time,
+        t_tk_basedata_import_his.state as state
+  		from
+  			t_tk_basedata_import_his 
+  			left join t_code 
+            on t_tk_basedata_import_his.template_type = t_code.code_id
+            and t_code.code_type = 'TEMPLATE_TYPE'
+  		where
+  			t_tk_basedata_import_his.template_type = #{templateType}
+  			and t_tk_basedata_import_his.delete_flg = '0'
+  			ORDER BY   CREATE_DATE_TIME DESC
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        preparation1,
+        preparation2,
+        preparation3,
+        preparation4,
+        preparation5,
+        preparation6,
+        preparation7,
+        preparation8,
+        preparation9,
+        preparation10,
+        id,
+        uuid,
+        template_type, tempalte_name, state, file_content, update_key, delete_flg, create_date_time, create_user_id, update_date_time, update_user_id
+    </sql>
+
+</mapper>

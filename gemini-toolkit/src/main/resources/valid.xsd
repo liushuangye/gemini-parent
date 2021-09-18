@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="devops">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="name" />
+                <xs:element ref="desc"  />
+                <xs:element ref="steps"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="steps">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="step"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="step">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="name"/>
+                <xs:element ref="desc"/>
+                <xs:element ref="paramsOfWhere"/>
+                <xs:sequence minOccurs="0" maxOccurs="1">
+               		 <xs:element ref="paramsOfSet"/>
+                </xs:sequence>
+                <xs:element ref="execSqls" />
+                <xs:sequence minOccurs="0" maxOccurs="1">
+                    <xs:element ref="backupSqls"/>
+                    <xs:element ref="rollbackSqls"/>
+                </xs:sequence>
+            </xs:sequence>
+            <xs:attribute name="id" use="required" type="xs:integer"/>
+            <xs:attribute name="type" type="stepType"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="type" type="xs:NCName"/>
+    <xs:element name="paramsOfWhere">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="param"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="paramsOfSet">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="param"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="param">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:NCName">
+                    <xs:attribute name="key" use="required" type="xs:NCName"/>
+                    <xs:attribute name="multi" use="required" type="xs:boolean"/>
+                    <xs:attribute name="placeholder" use="required" type="xs:string"/>
+                    <xs:attribute name="rules"  type="xs:string"/>
+                    <xs:attribute name="type" use="required" type="xs:NCName"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+  <xs:element name="execSqls">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="sqlScript">
+          <xs:attribute name="type" use="required" type="xs:NCName"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="backupSqls">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="sqlScript">
+          <xs:attribute name="type"  type="xs:NCName"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rollbackSqls">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="sqlScript">
+          <xs:attribute name="type"  type="xs:NCName"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+    <xs:element name="name" type="xs:NCName"/>
+    <xs:element name="desc" type="xs:string"/>
+    <xs:complexType name="sqlScript">
+        <xs:sequence>
+            <xs:element ref="sql"  maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="sql" >
+        <xs:complexType mixed="true">
+            <xs:attribute name="dbtype"  type="dbtype"/>
+            <xs:attribute name="name" use="required"/>
+            <xs:attribute name="order" use="required" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+    <!--数据库类型 postgresql,oracle-->
+    <xs:simpleType name="dbtype">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+            <xs:enumeration value="postgresql"/>
+            <xs:enumeration value="oracle"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!--sql的类型-->
+    <xs:simpleType name="stepType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="query"/>
+            <xs:enumeration value="update"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!--script的类型-->
+    <xs:simpleType name="scriptType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="backup"/>
+            <xs:enumeration value="rollback"/>
+			<xs:enumeration value="exec"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
