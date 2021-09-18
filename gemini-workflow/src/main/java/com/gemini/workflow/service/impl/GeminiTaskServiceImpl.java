@@ -85,16 +85,19 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
         Map variablesLocal = taskDTO.getVariablesLocal();
 
 
-        Task task = taskService.createTaskQuery().taskId(taskDTO.getTaskId()).singleResult();
-        if(task == null){
-            //通过businessKey找不到说明没流程，直接抛异常
-            task = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).singleResult();
-            if(task == null)throw new ProcessInstanceNotFoundException(ProcessInstanceNotFoundException.msg);
+        //通过businessKey找不到说明没流程，直接抛异常
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+        if(processInstance == null)throw new ProcessInstanceNotFoundException(ProcessInstanceNotFoundException.msg);
 
-            //如果根据taskId找不到task，该操作可能是从列表页进入，需要先根据businessKey找到活动的task
+        //有taskId先根据taskId查找
+        Task task = taskService.createTaskQuery().taskId(taskDTO.getTaskId()).taskCandidateOrAssigned(userId).singleResult();
+        if(task == null){
+            //根据businessKey和userId找到对应的任务
             task = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskCandidateOrAssigned(userId).singleResult();
             if(task == null)throw new Exception("没有对应的流程或待办任务");
+            taskId = task.getId();
         }
+
 
         taskService.setVariables(taskId,variables);
         taskService.setVariablesLocal(taskId,variablesLocal);
