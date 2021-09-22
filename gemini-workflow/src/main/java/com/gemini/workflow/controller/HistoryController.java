@@ -32,13 +32,13 @@ public class HistoryController extends BaseController {
     @GetMapping(path = "findHistory")
     @ApiOperation(value = "审查履历查询", notes = "已完成的、未完成的都会查出来，未完成的endTime为空")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "dataUuid", value = "业务数据uuid", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "businessKey", value = "业务键，取业务数据的uuid", dataType = "String", paramType = "query"),
     })
-    public RestMsg findHistory(@RequestParam("dataUuid") String processInstanceId) {
+    public RestMsg findHistory(@RequestParam("businessKey") String businessKey) {
         List resultList = new ArrayList<>();
         RestMsg restMsg = new RestMsg();
         try {
-            resultList = geminiHistoryService.findHistory(processInstanceId);
+            resultList = geminiHistoryService.findHistory(businessKey);
             restMsg = RestMsg.success("查询成功", resultList);
         } catch (Exception e) {
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);

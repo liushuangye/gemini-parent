@@ -75,8 +75,8 @@ public class DefineServiceImpl extends BaseService implements DefineService {
             jsonObject.put("key",model.getKey());
             jsonObject.put("name",model.getName());
             jsonObject.put("version",model.getVersion());
-            jsonObject.put("createTime", DateUtil.format(model.getCreateTime(),"yyyy-MM-dd HH:mm:ss"));
-            jsonObject.put("lastUpdateTime", DateUtil.format(model.getLastUpdateTime(),"yyyy-MM-dd HH:mm:ss"));
+            jsonObject.put("createTime", DateUtil.format(model.getCreateTime(),"yyyy/MM/dd HH:mm:ss"));
+            jsonObject.put("lastUpdateTime", DateUtil.format(model.getLastUpdateTime(),"yyyy/MM/dd HH:mm:ss"));
             jsonObject.put("metaInfo",model.getMetaInfo());
             jsonObject.put("description",metaJson.getString("description"));
             jsonObject.put("deploymentId",model.getDeploymentId());

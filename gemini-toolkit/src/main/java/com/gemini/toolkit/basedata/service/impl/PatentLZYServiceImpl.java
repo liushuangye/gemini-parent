@@ -1,14 +1,15 @@
 package com.gemini.toolkit.basedata.service.impl;
 
 import com.gemini.toolkit.basedata.dto.CheckErrorDto;
+import com.gemini.toolkit.basedata.dto.CondtionDto;
 import com.gemini.toolkit.basedata.dto.SaveOrUpdateDto;
 import com.gemini.toolkit.basedata.dto.TableInfoDto;
+import com.gemini.toolkit.basedata.service.PatentLZYService;
 import com.gemini.toolkit.common.exception.MyException;
 import com.gemini.toolkit.common.utils.*;
 import com.gemini.toolkit.login.form.UserInfo;
-import com.gemini.toolkit.basedata.service.PatentLZYService;
-import com.gemini.toolkit.common.utils.*;
-import lombok.extern.slf4j.Slf4j;
+
+import org.apache.bcel.generic.IF_ACMPEQ;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Slf4j
+
 @Service
 public class PatentLZYServiceImpl extends AbsDataImport implements PatentLZYService {
     @Override

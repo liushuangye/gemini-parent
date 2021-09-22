@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+import com.gemini.toolkit.basedata.service.impl.EthicsStaffServiceImpl;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -15,12 +16,14 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import com.gemini.toolkit.common.exception.PgApplicationException;
 import com.gemini.toolkit.common.exception.PgInputCheckException;
 
-import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * excel文件下载
@@ -28,8 +31,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author
  *
  */
-@Slf4j
+
 public class ExcelUtil {
+	private static final Logger log = LoggerFactory.getLogger(ExcelUtil.class);
 	
 	/**
 	 * 文件转byte数组

@@ -4,13 +4,13 @@
  */
 package com.gemini.toolkit.universal.calculate.groovy.cache;
 
-import lombok.extern.slf4j.Slf4j;
+
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@Slf4j
+
 public class BeanNameCache {
 
     /**

@@ -11,14 +11,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.gemini.toolkit.basedata.entity.TBasedataImportHisEntity;
-import com.gemini.toolkit.basedata.entity.TBasedataTempDownloadHisEntity;
-import com.gemini.toolkit.basedata.mapper.CustomizeMapper;
-import com.gemini.toolkit.basedata.mapper.TBasedataTempDownloadHisMapper;
-import com.gemini.toolkit.basedata.service.*;
-import com.gemini.toolkit.common.exception.PgApplicationException;
-import com.gemini.toolkit.common.exception.PgInputCheckException;
-import com.gemini.toolkit.login.form.UserInfo;
 import com.gemini.toolkit.basedata.service.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +23,18 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.gemini.toolkit.basedata.entity.TBasedataImportHisEntity;
+import com.gemini.toolkit.basedata.entity.TBasedataTempDownloadHisEntity;
+import com.gemini.toolkit.basedata.mapper.CustomizeMapper;
+import com.gemini.toolkit.basedata.mapper.TBasedataTempDownloadHisMapper;
+import com.gemini.toolkit.common.exception.PgApplicationException;
+import com.gemini.toolkit.common.exception.PgInputCheckException;
 import com.gemini.toolkit.common.utils.CheckParamUtil;
 import com.gemini.toolkit.common.utils.CommonConsts;
 import com.gemini.toolkit.common.utils.ExcelUtil;
 import com.gemini.toolkit.common.utils.GetUserInfo;
 import com.gemini.toolkit.common.utils.R;
+import com.gemini.toolkit.login.form.UserInfo;
 import com.gemini.toolkit.sysparam.entity.TCodeEntity;
 import com.gemini.toolkit.sysparam.mapper.TCodeMapper;
 
@@ -55,7 +54,7 @@ import com.gemini.toolkit.sysparam.mapper.TCodeMapper;
 public class BasedataServiceImpl implements BasedataService {
 
 	@Autowired
-    CustomizeMapper customizeMapper;
+	CustomizeMapper customizeMapper;
 
 	@Autowired
 	TBasedataImportHisService tBasedataImportHisService;
@@ -64,7 +63,7 @@ public class BasedataServiceImpl implements BasedataService {
 	private MessageSource messageSource;
 
 	@Autowired
-    TBasedataTempDownloadHisMapper tBasedataTempDownloadHisMapper;
+	TBasedataTempDownloadHisMapper tBasedataTempDownloadHisMapper;
 
 	@Autowired
 	TCodeMapper tCodeMapper;
@@ -76,7 +75,7 @@ public class BasedataServiceImpl implements BasedataService {
 	OrganizeStaffService organizeStaffService;
 
 	@Autowired
-    CompanyStaffService companyStaffService;
+	CompanyStaffService companyStaffService;
 
 	@Autowired
 	EthicsStaffService ethicsStaffService;
@@ -91,7 +90,7 @@ public class BasedataServiceImpl implements BasedataService {
 	@Autowired
 	StandardService standardService;
 	@Autowired
-    AttendMeetingService attendMeetingService;
+	AttendMeetingService attendMeetingService;
 	@Autowired
 	AchievementAwardService achievementAwardService;
 	@Autowired
@@ -99,11 +98,11 @@ public class BasedataServiceImpl implements BasedataService {
 	@Autowired
 	PaperSubmissionService paperSubmissionService;
 	@Autowired
-    SoftwareCopyrightLZYService softwareCopyrightLZYService;
+	SoftwareCopyrightLZYService softwareCopyrightLZYService;
 	@Autowired
 	NewDrugCertificateService newDrugCertificateService;
 	@Autowired
-    AcademicLecturesService academicLecturesService;
+	AcademicLecturesService academicLecturesService;
 	@Autowired
 	AcademicPapersService academicPapersService;
 	@Autowired
@@ -113,11 +112,13 @@ public class BasedataServiceImpl implements BasedataService {
 	@Autowired
 	HostConferenceService hostConferenceService;
 	@Autowired
-    CopyrightService copyrightService;
+	CopyrightService copyrightService;
 	@Autowired
 	PatentService patentService;
 	@Autowired
 	PatentLZYService patentLZYService;
+	@Autowired
+	LearnHoldOfficeService learnHoldOfficeService;
 
 
 	/**
@@ -205,6 +206,9 @@ public class BasedataServiceImpl implements BasedataService {
 						modelFlg, fileName,dbImportType);
 			}else if (CommonConsts.PATENT_LZY.equals(templateType)){
 				r = patentLZYService.importExecl(wookbook, templateType, tempalteName, templateTypeName,
+						modelFlg, fileName,dbImportType);
+			}else if (CommonConsts.LEARN_HOLD_OFFICE.equals(templateType)){
+				r = learnHoldOfficeService.importExecl(wookbook, templateType, tempalteName, templateTypeName,
 						modelFlg, fileName,dbImportType);
 			}
 			wookbook.close();

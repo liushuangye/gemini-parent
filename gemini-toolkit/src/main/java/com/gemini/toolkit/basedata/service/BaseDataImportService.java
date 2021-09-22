@@ -3,8 +3,9 @@ package com.gemini.toolkit.basedata.service;
 import java.util.List;
 import java.util.Map;
 
-import com.gemini.toolkit.basedata.dto.CheckErrorDto;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import com.gemini.toolkit.basedata.dto.CheckErrorDto;
 
 public interface BaseDataImportService {
 
@@ -14,7 +15,7 @@ public interface BaseDataImportService {
 	 * @paramt emplateName 模板名称
 	 * @return 返回每个sheet的错误信息list
 	 */
-	public Map<String, Map<Integer, List<CheckErrorDto>>> before(HSSFWorkbook wookbook, String templateName);
+	public Map<String, Map<Integer, List<CheckErrorDto>>> before(HSSFWorkbook wookbook, String templateName);		
 		
 	/**
 	 * execl check

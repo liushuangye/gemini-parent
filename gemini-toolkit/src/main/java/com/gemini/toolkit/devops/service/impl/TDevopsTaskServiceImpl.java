@@ -58,7 +58,7 @@ import com.gemini.toolkit.devops.xml.model.Sql;
 import com.gemini.toolkit.devops.xml.model.Step;
 import com.gemini.toolkit.devops.xml.model.StepType;
 
-import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * <p>
@@ -69,7 +69,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2021-05-19
  */
 @Service
-@Slf4j
+
 public class TDevopsTaskServiceImpl extends ServiceImpl<TDevopsTaskMapper, TDevopsTaskEntity>
 		implements TDevopsTaskService {
 	private static final Logger log = LoggerFactory.getLogger(TDevopsTaskServiceImpl.class);

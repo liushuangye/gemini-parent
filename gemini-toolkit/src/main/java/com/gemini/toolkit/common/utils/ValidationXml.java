@@ -13,8 +13,9 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.SAXValidator;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -23,12 +24,13 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 
-@Slf4j
-public class ValidationXml {
 
+public class ValidationXml {
+    private static final Logger log = LoggerFactory.getLogger(ValidationXml.class);
 	
     @SuppressWarnings("unchecked")
 	public static String validateXMLByXSD(String xmlFilename,InputStream xml,String xsd) {
+
         // 从类路径下读取文件
         String xsdFileName = xsd;
         StringBuilder errorMsg = new StringBuilder();

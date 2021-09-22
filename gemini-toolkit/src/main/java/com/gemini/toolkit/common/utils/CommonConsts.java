@@ -406,6 +406,16 @@ public class CommonConsts {
 	 */
 	public static final String PATENT_LZYSHEET = "专利";
 
+	/**
+	 * 学会任职模板名称
+	 */
+	public static final String LEARN_HOLD_OFFICE = "20";
+
+	/**
+	 * 学会任职特定性处理sheet名
+	 */
+	public static final String LEARN_HOLD_OFFICESHEET = "学会任职";
+
 
 
 	

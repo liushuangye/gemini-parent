@@ -6,14 +6,15 @@ import com.gemini.toolkit.basedata.dto.CheckErrorDto;
 import com.gemini.toolkit.basedata.dto.CondtionDto;
 import com.gemini.toolkit.basedata.dto.SaveOrUpdateDto;
 import com.gemini.toolkit.basedata.dto.TableInfoDto;
-import com.gemini.toolkit.common.utils.*;
-import com.gemini.toolkit.login.form.UserInfo;
 import com.gemini.toolkit.basedata.service.ProfessionalInfoService;
 import com.gemini.toolkit.common.utils.*;
-import lombok.extern.slf4j.Slf4j;
+import com.gemini.toolkit.login.form.UserInfo;
+
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,9 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
+
 @Service
 public class ProfessionalInfoServiceImpl extends AbsDataImport implements ProfessionalInfoService {
+	private static final Logger log = LoggerFactory.getLogger(ProfessionalInfoServiceImpl.class);
 
 	@Autowired
 	private MessageSource messageSource;

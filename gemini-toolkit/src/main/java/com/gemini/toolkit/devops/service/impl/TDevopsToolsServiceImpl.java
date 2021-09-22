@@ -44,7 +44,7 @@ import com.gemini.toolkit.common.utils.JaxbUtil;
 import com.gemini.toolkit.common.utils.ValidationXml;
 import com.gemini.toolkit.devops.service.TDevopsToolsService;
 
-import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * <p>
@@ -55,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2021-05-14
  */
 @Service
-@Slf4j
+
 public class TDevopsToolsServiceImpl extends ServiceImpl<TDevopsToolsMapper, TDevopsToolsEntity>
 		implements TDevopsToolsService {
 	private static final Logger log = LoggerFactory.getLogger(TDevopsToolsServiceImpl.class);

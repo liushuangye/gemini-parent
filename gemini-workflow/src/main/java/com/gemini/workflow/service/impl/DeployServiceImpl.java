@@ -65,7 +65,7 @@ public class DeployServiceImpl extends BaseService implements DeployService {
             jsonObject.put("resourceName",processDefinition.getResourceName());
             jsonObject.put("deploymentId",processDefinition.getDeploymentId());
             Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(processDefinition.getDeploymentId()).singleResult();
-            jsonObject.put("deploymentTime",DateUtil.format(deployment.getDeploymentTime(),"yyyy-MM-dd HH:mm:ss"));//发布时间
+            jsonObject.put("deploymentTime",DateUtil.format(deployment.getDeploymentTime(),"yyyy/MM/dd HH:mm:ss"));//发布时间
 
             modelArray.add(jsonObject);
         }

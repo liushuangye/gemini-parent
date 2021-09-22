@@ -3,20 +3,19 @@ package com.gemini.toolkit.basedata.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gemini.toolkit.basedata.dto.CondtionDto;
-import com.gemini.toolkit.basedata.entity.TBasedataTempDownloadHisEntity;
-import com.gemini.toolkit.basedata.mapper.CustomizeMapper;
-import com.gemini.toolkit.common.utils.*;
-import com.gemini.toolkit.config.PasswordUtil;
-import com.gemini.toolkit.login.form.UserInfo;
 import com.gemini.toolkit.basedata.dto.CheckErrorDto;
+import com.gemini.toolkit.basedata.dto.CondtionDto;
 import com.gemini.toolkit.basedata.dto.SaveOrUpdateDto;
 import com.gemini.toolkit.basedata.dto.TableInfoDto;
 import com.gemini.toolkit.basedata.entity.TBasedataImportHisEntity;
+import com.gemini.toolkit.basedata.entity.TBasedataTempDownloadHisEntity;
+import com.gemini.toolkit.basedata.mapper.CustomizeMapper;
 import com.gemini.toolkit.basedata.mapper.TBasedataTempDownloadHisMapper;
 import com.gemini.toolkit.basedata.service.TBasedataImportHisService;
 import com.gemini.toolkit.common.utils.*;
-import lombok.extern.slf4j.Slf4j;
+import com.gemini.toolkit.config.PasswordUtil;
+import com.gemini.toolkit.devops.service.impl.TDevopsTaskServiceImpl;
+import com.gemini.toolkit.login.form.UserInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -42,7 +41,6 @@ import java.util.Map.Entry;
  * @author jintg
  *
  */
-@Slf4j
 public abstract class AbsDataImport {
 	private static final Logger log = LoggerFactory.getLogger(AbsDataImport.class);
 
