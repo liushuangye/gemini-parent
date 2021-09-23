@@ -9,7 +9,7 @@ public class RestMsg {
     @ApiModelProperty(value = "错误信息")
     private String msg;
     @ApiModelProperty(value = "状态码")
-    private String code;
+    private int code;
     @ApiModelProperty(value = "返回的数据")
     private Object data;
 
@@ -21,11 +21,11 @@ public class RestMsg {
         this.msg = msg;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
@@ -39,7 +39,7 @@ public class RestMsg {
 
     public static RestMsg success(String msg, Object data) {
         RestMsg restMsg = new RestMsg();
-        restMsg.setCode("200");
+        restMsg.setCode(200);
         restMsg.setMsg(msg);
         restMsg.setData(data);
         return restMsg;
@@ -47,12 +47,12 @@ public class RestMsg {
 
     public static RestMsg fail(String msg, Object data) {
         RestMsg restMsg = new RestMsg();
-        restMsg.setCode("500");
+        restMsg.setCode(500);
         restMsg.setMsg(msg);
         restMsg.setData(data);
         return restMsg;
     }
-    public static RestMsg response(String code,String msg, Object data) {
+    public static RestMsg response(int code,String msg, Object data) {
         RestMsg restMsg = new RestMsg();
         restMsg.setCode(code);
         restMsg.setMsg(msg);

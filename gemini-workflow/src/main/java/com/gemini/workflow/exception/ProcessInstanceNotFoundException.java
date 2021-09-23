@@ -6,7 +6,7 @@ package com.gemini.workflow.exception;
 public class ProcessInstanceNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	public static final String code = "1001";
+	public static final int code = 1001;
 	public static final String msg = "流程实例不存在";
 
 	public ProcessInstanceNotFoundException(String message) {

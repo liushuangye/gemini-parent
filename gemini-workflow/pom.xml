@@ -61,6 +61,12 @@
             <groupId>org.activiti</groupId>
             <artifactId>activiti-image-generator</artifactId>
         </dependency>
+        <!-- json 扁平化处理 -->
+        <dependency>
+            <groupId>com.github.wnameless.json</groupId>
+            <artifactId>json-flattener</artifactId>
+            <version>0.8.1</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
         <dependency>

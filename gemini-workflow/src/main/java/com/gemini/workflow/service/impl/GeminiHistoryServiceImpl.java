@@ -50,20 +50,32 @@ public class GeminiHistoryServiceImpl extends BaseService implements GeminiHisto
             jsonObject.put("endTime",DateUtil.format(hisTaskInst.getEndTime(),"yyyy/MM/dd"));
             // 从任务变量获取信息
             Map<String, Object> taskLocalVariables = hisTaskInst.getTaskLocalVariables();
+            String startUserId = taskLocalVariables.get("startUserId").toString();//申请人
             String businessDataStr = taskLocalVariables.get("businessData").toString();
             JSONObject businessData = JSONObject.parseObject(businessDataStr);
             JSONObject actWorkflowBill = businessData.getJSONObject("actWorkflowBill");
             String reviewResult = actWorkflowBill.getString("reviewResultName");
             String reviewResultName = actWorkflowBill.getString("reviewResultName");
+            if(StringUtils.isEmpty(reviewResultName)) reviewResultName = "提交";
             String reviewComment = actWorkflowBill.getString("reviewComment");
-            if(StringUtils.isNotEmpty(reviewComment)){
-                //审核意见展示换行
-                reviewComment = reviewComment.replace(" ", "&nbsp;&nbsp;");
-                reviewComment = reviewComment.replace("\r\n", "<br/>");
+            String modifyComment = actWorkflowBill.getString("modifyComment");
+            String handleComment = "";//办理意见
+            //如果本节点的办理人是申请人 且 修改意见非空，则办理意见为修改意见
+            if(StringUtils.equals(assignee.getUserId(),startUserId) && StringUtils.isNotEmpty(modifyComment)){
+                handleComment = modifyComment;
+            }
+            //如果本节点的办理人不是申请人 且 审核意见非空，则办理意见为审核意见
+            if(!StringUtils.equals(assignee.getUserId(),startUserId) && StringUtils.isNotEmpty(reviewComment)){
+                handleComment = reviewComment;
+            }
+            if(StringUtils.isNotEmpty(handleComment)){
+                //办理意见展示换行
+                handleComment = handleComment.replace(" ", "&nbsp;&nbsp;");
+                handleComment = handleComment.replace("\r\n", "<br/>");
             }
             jsonObject.put("reviewResult",reviewResult);
             jsonObject.put("reviewResultName",reviewResultName);
-            jsonObject.put("reviewComment",reviewComment);
+            jsonObject.put("handleComment",handleComment);
             result.add(jsonObject);
         }
         return result;
