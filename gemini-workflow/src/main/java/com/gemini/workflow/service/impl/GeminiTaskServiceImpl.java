@@ -57,7 +57,8 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
         if (StringUtils.isNotEmpty(processDefinitionKey))
             taskQuery = taskQuery.processDefinitionKey(processDefinitionKey);//按流程定义Key筛选
 
-        taskQuery.includeProcessVariables();//将任务变量一并查出来
+        taskQuery.includeProcessVariables();//将流程变量一并查出来
+        taskQuery.includeTaskLocalVariables();//将任务变量一并查出来
         List<Task> taskList = taskQuery.list();//查询 个人 和 候选 任务
 
         if (CollectionUtil.isNotEmpty(taskList)) {
@@ -75,9 +76,12 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
                 FlowElement flowElement = mainProcess.getFlowElement(task.getTaskDefinitionKey());//任务节点定义
                 UserTask userTask = (UserTask) flowElement;
                 String handleUrl = userTask.getExtensionElements().get(CustomUserTaskJsonConverter.HANDLE_URL).get(0).getElementText();//处理链接
+                String showUrl = userTask.getExtensionElements().get(CustomUserTaskJsonConverter.SHOW_URL).get(0).getElementText();//查看链接
 
+                /** 替换url中的占位符 */
                 Map<String, Object> processVariables = task.getProcessVariables();
-                WorkflowUtils.replacePlaceHolder(processVariables,handleUrl);//替换url中的占位符
+                handleUrl = WorkflowUtils.replacePlaceHolder(processVariables,handleUrl);
+                showUrl = WorkflowUtils.replacePlaceHolder(processVariables,showUrl);
 
 
                 /* 任务ID */
@@ -99,6 +103,8 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
                 resultMap.put("createTimeString", preOptTime);
                 /* 任务节点的处理链接  约定将审核url放到 自定义属性的handleUrl中 */
                 resultMap.put("handlerUrl", handleUrl);
+                /* 任务节点的查看链接  约定将查看url放到 自定义属性的showUrl中 */
+                resultMap.put("showUrl", showUrl);
 
                 /* 任务的办理人 */
                 resultMap.put("taskAssignee", task.getAssignee());

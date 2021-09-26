@@ -12,4 +12,7 @@ public interface GeminiHistoryService {
 
     //获取某个任务节点的数据快照（流程变量）
     public List getHistoryTaskVariables(String processInstanceId, String executionId, String taskId)  throws Exception;
+
+    //获取某个任务节点的业务数据快照：businessData
+    public String getHistoryBusinessData(String taskId)  throws Exception;
 }

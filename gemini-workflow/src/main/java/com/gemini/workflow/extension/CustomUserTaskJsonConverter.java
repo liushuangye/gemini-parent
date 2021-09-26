@@ -13,7 +13,7 @@ import java.util.Map;
 public class CustomUserTaskJsonConverter extends UserTaskJsonConverter{
     //UserTask扩展属性
     public static final String HANDLE_URL = "handleurl";
-    public static final String SHOW_URL = "reviewurl";
+    public static final String SHOW_URL = "showurl";
 
     private void addUserTaskExtensionElement(String name, String elementText, UserTask task) {
         ExtensionElement extensionElement = new ExtensionElement();

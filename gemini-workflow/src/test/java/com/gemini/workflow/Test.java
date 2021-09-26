@@ -6,5 +6,7 @@ public class Test {
         referer = referer.substring(referer.indexOf("?")+1);
         System.out.println(referer);
 
+
+
     }
 }

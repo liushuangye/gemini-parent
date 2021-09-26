@@ -20,7 +20,6 @@ public class WorkflowUtils {
             String businessDataStr = businessData.toString();
             Map<String, Object> flatMap = JsonFlattener.flattenAsMap(businessDataStr);
             for (Map.Entry<String, Object> entry : flatMap.entrySet()) {
-                System.out.println("businessData." + entry.getKey() + ":" + entry.getValue());
                 properties.put("businessData." + entry.getKey(), String.valueOf(entry.getValue()));//所有value转成String，否则后续替换占位符会报错
             }
         }
@@ -28,5 +27,19 @@ public class WorkflowUtils {
         PropertyPlaceholderHelper propertyHelper= new PropertyPlaceholderHelper("${", "}", ":", false);//false
         str = propertyHelper.replacePlaceholders(str, properties);
         return str;
+    }
+    /**
+     * url xml转义字符替换
+     * eg: &amp; -> &
+     * @param url
+     * @return
+     */
+    public static String replaceUrlXmlChar(String url){
+        url = url.replace("&amp;","&");
+        url = url.replace("&gt;",">");
+        url = url.replace("&lt;","<");
+        url = url.replace("&apos;","'");
+        url = url.replace("&quot;","\"");
+        return url;
     }
 }

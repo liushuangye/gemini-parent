@@ -1839,7 +1839,7 @@ ORYX.CONFIG.PANEL_RIGHT_WIDTH	= 		300;
 ORYX.CONFIG.APPNAME = 					'KISBPM';
 ORYX.CONFIG.WEB_URL = 					".";
 
-ORYX.CONFIG.BLANK_IMAGE = ORYX.CONFIG.LIBS_PATH + '/ext-2.0.2/resources/images/default/s.gif';
+ORYX.CONFIG.BLANK_IMAGE = ORYX.CONFIG.LIBS_PATH + '/extension-2.0.2/resources/images/default/s.gif';
 
 /* Specify offset of header */
 ORYX.CONFIG.OFFSET_HEADER = 61;
@@ -6450,7 +6450,7 @@ ORYX.Core.StencilSet.Property = Clazz.extend({
     
     /**
      * If type is date, dateFormat specifies the format of the date. The format
-     * specification of the ext library is used:
+     * specification of the extension library is used:
      *
      * Format  Output      Description
      *	------  ----------  --------------------------------------------------------------
@@ -17068,7 +17068,7 @@ ORYX.Plugins.AbstractPlugin = Clazz.extend({
         serializedDOM = '<?xml version="1.0" encoding="utf-8"?>' +
         '<html xmlns="http://www.w3.org/1999/xhtml" ' +
         'xmlns:b3mn="http://b3mn.org/2007/b3mn" ' +
-        'xmlns:ext="http://b3mn.org/2007/ext" ' +
+        'xmlns:extension="http://b3mn.org/2007/extension" ' +
         'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" ' +
         'xmlns:atom="http://b3mn.org/2007/atom+xhtml">' +
         '<head profile="http://purl.org/NET/erdf/profile">' +

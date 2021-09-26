@@ -65,4 +65,21 @@ public class HistoryController extends BaseController {
         }
         return restMsg;
     }
+    @GetMapping(path = "getHistoryBusinessData")
+    @ApiOperation(value = "历史任务业务对象查询", notes = "即历史任务的businessData")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "taskId", value = "流程实例Id", dataType = "String", paramType = "query"),
+    })
+    public RestMsg getHistoryBusinessData(@RequestParam("taskId") String taskId) {
+       String businessDataStr = "";
+        RestMsg restMsg = new RestMsg();
+        try {
+            businessDataStr = geminiHistoryService.getHistoryBusinessData(taskId);
+            restMsg = RestMsg.success("查询成功", businessDataStr);
+        } catch (Exception e) {
+            restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
+            return restMsg;
+        }
+        return restMsg;
+    }
 }

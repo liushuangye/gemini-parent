@@ -4,9 +4,14 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gemini.workflow.entity.User;
+import com.gemini.workflow.extension.CustomUserTaskJsonConverter;
 import com.gemini.workflow.mapper.UserMapper;
 import com.gemini.workflow.service.BaseService;
 import com.gemini.workflow.service.GeminiHistoryService;
+import com.gemini.workflow.utils.WorkflowUtils;
+import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.Process;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +55,13 @@ public class GeminiHistoryServiceImpl extends BaseService implements GeminiHisto
             jsonObject.put("taskDefinitionKey",hisTaskInst.getTaskDefinitionKey());
             jsonObject.put("startTime", DateUtil.format(hisTaskInst.getStartTime(),"yyyy/MM/dd"));
             jsonObject.put("endTime",DateUtil.format(hisTaskInst.getEndTime(),"yyyy/MM/dd"));
+
+            //获取当前任务节点的定义
+            Process mainProcess = repositoryService.getBpmnModel(hisTaskInst.getProcessDefinitionId()).getMainProcess();
+            FlowElement flowElement = mainProcess.getFlowElement(hisTaskInst.getTaskDefinitionKey());//任务节点定义
+            UserTask userTask = (UserTask) flowElement;
+            String showUrl = userTask.getExtensionElements().get(CustomUserTaskJsonConverter.SHOW_URL).get(0).getElementText();//查看链接
+
             // 从任务变量获取信息
             Map<String, Object> taskLocalVariables = hisTaskInst.getTaskLocalVariables();
             String startUserId = taskLocalVariables.get("startUserId").toString();//申请人
@@ -73,6 +87,13 @@ public class GeminiHistoryServiceImpl extends BaseService implements GeminiHisto
                 handleComment = handleComment.replace(" ", "&nbsp;&nbsp;");
                 handleComment = handleComment.replace("\r\n", "<br/>");
             }
+            //替换掉showUrl中的占位符
+            showUrl = WorkflowUtils.replacePlaceHolder(taskLocalVariables,showUrl);
+            //复原showUrl中的特殊符号
+            showUrl = WorkflowUtils.replaceUrlXmlChar(showUrl);
+
+            jsonObject.put("showUrl",showUrl);
+            jsonObject.put("businessDataStr",businessDataStr);
             jsonObject.put("reviewResult",reviewResult);
             jsonObject.put("reviewResultName",reviewResultName);
             jsonObject.put("handleComment",handleComment);
@@ -92,5 +113,16 @@ public class GeminiHistoryServiceImpl extends BaseService implements GeminiHisto
 
         //TODO 返回ctms的格式
         return list;
+    }
+
+    @Override
+    public String getHistoryBusinessData(String taskId) throws Exception {
+        HistoricTaskInstance hisTaskInst = historyService.createHistoricTaskInstanceQuery()
+                .taskId(taskId)
+                .includeTaskLocalVariables()//将任务变量一并查出来
+                .singleResult();
+        Map<String, Object> taskLocalVariables = hisTaskInst.getTaskLocalVariables();
+        String businessDataStr = taskLocalVariables.get("businessData").toString();
+        return businessDataStr;
     }
 }
