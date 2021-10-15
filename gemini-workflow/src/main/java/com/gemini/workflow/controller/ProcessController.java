@@ -1,5 +1,6 @@
 package com.gemini.workflow.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.gemini.workflow.DTO.ProcessDTO;
 import com.gemini.workflow.service.ProcessService;
 import com.gemini.workflow.utils.RestMsg;
@@ -12,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Api(tags = "流程实例管理")
@@ -32,6 +31,7 @@ public class ProcessController extends BaseController {
         try {
             instance = processService.startWorkflow(processDTO);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("启动失败", e.getMessage());
         }
         if (instance != null) {
@@ -58,11 +58,32 @@ public class ProcessController extends BaseController {
             List<ProcessInstance> resultList = processService.searchProcessInstances(processDefinitionKey);
             restMsg = RestMsg.success("查询成功", resultList);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
         }
         return restMsg;
     }
 
+
+    @PostMapping(path = "searchProInstByBusinessKeys")
+    @ApiOperation(value = "根据businessKeys查询流程实例", notes = "返回proc_def_id_，business_key_，proc_inst_id_的列表")
+    @ApiImplicitParam(name = "businessKeys", value = "单据uuid的set", required = true)
+    public RestMsg searchProInstByBusinessKeys(@RequestBody Map map) {
+        String userId = (String) map.getOrDefault("userId", "");
+        List<String> businessKeysList = (List<String>) map.getOrDefault("businessKeys", new ArrayList());
+
+        List<Map> maps = new ArrayList<>();
+        RestMsg restMsg = new RestMsg();
+        try {
+            maps = processService.searchProInstByBusinessKeys(businessKeysList,userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            restMsg = RestMsg.fail("查询失败", e.getMessage());
+        }
+        Map<String, String> result = new HashMap<>();
+        restMsg = RestMsg.success("查询成功", maps);
+        return restMsg;
+    }
 
     @GetMapping(path = "searchById")
     @ApiOperation(value = "根据流程ID查询流程实例", notes = "查询流程实例")
@@ -83,6 +104,7 @@ public class ProcessController extends BaseController {
                 restMsg = RestMsg.success("查询成功", resultMap);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
         }
         return restMsg;
@@ -100,6 +122,7 @@ public class ProcessController extends BaseController {
             processService.deleteInstanceById(processId);
             restMsg = RestMsg.success("删除成功", "");
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("删除失败:" + e.getMessage(),null);
         }
         return restMsg;
@@ -117,6 +140,7 @@ public class ProcessController extends BaseController {
             processService.deleteInstanceByKey(processDefinitionKey);
             restMsg = RestMsg.success("删除失败", "");
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("删除失败" +  e.getMessage(),null);
         }
 

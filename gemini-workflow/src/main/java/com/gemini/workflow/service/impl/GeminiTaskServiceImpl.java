@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gemini.workflow.DTO.TaskDTO;
+import com.gemini.workflow.entity.User;
 import com.gemini.workflow.exception.ProcessInstanceNotFoundException;
 import com.gemini.workflow.extension.CustomUserTaskJsonConverter;
+import com.gemini.workflow.mapper.UserMapper;
 import com.gemini.workflow.service.BaseService;
 import com.gemini.workflow.service.GeminiTaskService;
 import com.gemini.workflow.utils.WorkflowUtils;
@@ -18,6 +20,8 @@ import org.activiti.bpmn.model.Process;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.editor.language.json.converter.util.JsonConverterUtil;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.delegate.event.impl.ActivitiEntityEventImpl;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.context.Context;
@@ -28,6 +32,7 @@ import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.impl.util.ProcessDefinitionUtil;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 import org.activiti.spring.SpringExpressionManager;
@@ -37,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 
+import javax.annotation.Resource;
 import javax.el.ELContext;
 import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
@@ -46,6 +52,8 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskService {
+    @Resource
+    UserMapper userMapper;
 
     @Override
     public List findTask(String userId, String processDefinitionKey) throws Exception {
@@ -76,12 +84,10 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
                 FlowElement flowElement = mainProcess.getFlowElement(task.getTaskDefinitionKey());//任务节点定义
                 UserTask userTask = (UserTask) flowElement;
                 String handleUrl = userTask.getExtensionElements().get(CustomUserTaskJsonConverter.HANDLE_URL).get(0).getElementText();//处理链接
-                String showUrl = userTask.getExtensionElements().get(CustomUserTaskJsonConverter.SHOW_URL).get(0).getElementText();//查看链接
 
                 /** 替换url中的占位符 */
                 Map<String, Object> processVariables = task.getProcessVariables();
                 handleUrl = WorkflowUtils.replacePlaceHolder(processVariables,handleUrl);
-                showUrl = WorkflowUtils.replacePlaceHolder(processVariables,showUrl);
 
 
                 /* 任务ID */
@@ -103,11 +109,7 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
                 resultMap.put("createTimeString", preOptTime);
                 /* 任务节点的处理链接  约定将审核url放到 自定义属性的handleUrl中 */
                 resultMap.put("handlerUrl", handleUrl);
-                /* 任务节点的查看链接  约定将查看url放到 自定义属性的showUrl中 */
-                resultMap.put("showUrl", showUrl);
 
-                /* 任务的办理人 */
-                resultMap.put("taskAssignee", task.getAssignee());
                 /* 执行对象ID */
                 resultMap.put("executionId", task.getExecutionId());
                 /* 流程定义ID */
@@ -118,6 +120,16 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
                 ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
                 String businessKey = processInstance.getBusinessKey();
                 resultMap.put("businessKey", businessKey);
+
+                /* 获取BusinessData的trialId（如果有） */
+                Object businessDataObj = runtimeService.getVariable(task.getExecutionId(), "businessData");
+                String trialId = "";
+                if(businessDataObj != null){
+                    String businessDataStr = runtimeService.getVariable(task.getExecutionId(), "businessData").toString();
+                    JSONObject businessData = JSONObject.parseObject(businessDataStr);
+                    trialId = businessData.getString("trialId");
+                }
+                resultMap.put("trialId", trialId);
 
                 resultList.add(resultMap);
             }
@@ -138,9 +150,12 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
         Map variablesLocal = taskDTO.getVariablesLocal();
 
 
-        //通过businessKey找不到说明没流程，直接抛异常
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
-        if (processInstance == null) throw new ProcessInstanceNotFoundException(ProcessInstanceNotFoundException.msg);
+        List<HistoricProcessInstance> hisList = historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(businessKey).list();
+        List<ProcessInstance> actList = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).list();
+        // 如果业务单据没有流程则抛定制异常，调用者可能回根据响应码进行处理
+        if (hisList.size() == 0 && actList.size() == 0) throw new ProcessInstanceNotFoundException(ProcessInstanceNotFoundException.msg);
+        // 如果业务单据只有历史流程则抛普通已成
+        if (hisList.size() > 0 && actList.size() == 0) throw new Exception("流程已结束！");
 
         //有taskId先根据taskId查找
         Task task = taskService.createTaskQuery().taskId(taskDTO.getTaskId()).taskCandidateOrAssigned(userId).singleResult();
@@ -151,6 +166,16 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
             taskId = task.getId();
         }
 
+
+        // 记录任务的处理人
+        String preUserId = userId;//任务处理人
+        String preOptTime = DateUtil.format(DateUtil.date(),"yyyy/MM/dd HH:mm:ss");//任务处理时间
+        User user = userMapper.loadUserByUserId(preUserId);
+        String preUserName = user.getStaffName();
+
+        variables.put("preUserId",preUserId);
+        variables.put("preUserName",preUserName);
+        variables.put("preOptTime",preOptTime);
 
         taskService.setVariables(taskId, variables);
         taskService.setVariablesLocal(taskId, variablesLocal);
@@ -165,6 +190,7 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
             claimTask(taskId, userId);
             taskService.complete(taskId);
         }
+
 
 //            taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(taskId).build());
 //            taskService.complete(taskId, variables);
@@ -185,4 +211,5 @@ public class GeminiTaskServiceImpl extends BaseService implements GeminiTaskServ
         securityUtil.logInAs(userId);
         taskService.setAssignee(taskId, userId);
     }
+
 }

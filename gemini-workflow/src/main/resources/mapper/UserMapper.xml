@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gemini.workflow.mapper.UserMapper">
+
+    <select id="getCandidateUserNames" resultType="java.lang.String">
+        SELECT
+            staff.staff_name
+        from t_user usr
+        left join t_staff staff on staff.staff_id = usr.staff_id
+        WHERE usr.user_id IN
+        <choose>
+            <when test="userIds.size == 0">
+                (null)
+            </when>
+            <when test="userIds.size > 0">
+                <foreach collection="userIds" item="user_id" index="index" open="(" close=")" separator=",">
+                    #{user_id}
+                </foreach>
+            </when>
+        </choose>
+
+        union
+
+        SELECT
+        staff.staff_name
+        from t_user_role ur
+        left join t_user usr on usr.user_id = ur.user_id
+        left join t_staff staff on staff.staff_id = usr.staff_id
+        WHERE ur.role_id IN
+        <choose>
+            <when test="groupIds.size == 0">
+                (null)
+            </when>
+            <when test="groupIds.size > 0">
+                <foreach collection="groupIds" item="group_id" index="index" open="(" close=")" separator=",">
+                    #{group_id}
+                </foreach>
+            </when>
+        </choose>
+
+    </select>
+</mapper>

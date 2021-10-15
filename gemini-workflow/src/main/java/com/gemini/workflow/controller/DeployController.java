@@ -22,13 +22,14 @@ public class DeployController extends BaseController {
     private DeployService deployService;
 
     @PostMapping("listRelease")
-    @ApiOperation(value = "查询流程定义", notes = "查询流程定义")
+    @ApiOperation(value = "查询流程定义", notes = "查询流程定义，Key升序、发布时间降序")
     public RestMsg listRelease(@RequestBody Map<String,Object> queryparam) {
         RestMsg restMsg = new RestMsg();
         try {
             Map<String, Object> result = deployService.listRelease(queryparam);
             restMsg = RestMsg.success("查询成功", result);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败", e.getMessage());
         }
         return restMsg;
@@ -48,6 +49,7 @@ public class DeployController extends BaseController {
             deployService.deploy(modelId);
             restMsg = RestMsg.success("部署成功", "");
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("部署失败:" + e.getMessage(),null);
 //            log.error("根据modelId部署流程,异常:{}", e);
         }
@@ -74,6 +76,7 @@ public class DeployController extends BaseController {
             deployService.deleteProcess(deploymentId,cascade);
             restMsg = RestMsg.success("删除成功", null);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("删除失败:" + e.getMessage(),null);
 //            log.error("根据部署ID删除流程,异常:{}", e);
         }

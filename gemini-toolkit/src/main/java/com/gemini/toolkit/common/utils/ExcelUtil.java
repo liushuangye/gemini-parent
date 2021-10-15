@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeParseException;
 
-import com.gemini.toolkit.basedata.service.impl.EthicsStaffServiceImpl;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -23,18 +23,18 @@ import org.springframework.core.io.ClassPathResource;
 import com.gemini.toolkit.common.exception.PgApplicationException;
 import com.gemini.toolkit.common.exception.PgInputCheckException;
 
-
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * excel文件下载
- * 
+ *
  * @author
  *
  */
-
+@Slf4j
 public class ExcelUtil {
 	private static final Logger log = LoggerFactory.getLogger(ExcelUtil.class);
-	
+
 	/**
 	 * 文件转byte数组
 	 * @param workbook
@@ -59,17 +59,17 @@ public class ExcelUtil {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * 打开exel模板文件
-	 * 
+	 *
 	 * @param tempFileName
 	 * @return
 	 */
 	public static HSSFWorkbook openExcelTemplate(String tempFileName) {
-		
+
 		ClassPathResource resource = new ClassPathResource(tempFileName);
-		
+
 		// 新建HSSFWorkbook
 		HSSFWorkbook workbook = null;
 		try {
@@ -84,7 +84,7 @@ public class ExcelUtil {
 
 	/**
 	 * 获取单元格值
-	 * 
+	 *
 	 * @param String
 	 * @return
 	 */
@@ -94,32 +94,32 @@ public class ExcelUtil {
 		}
 		String strCell = "";
 		switch (cell.getCellType()) {
-		case Cell.CELL_TYPE_STRING:
-			strCell = cell.getStringCellValue();
-			break;
-		case Cell.CELL_TYPE_NUMERIC:
-			if (HSSFDateUtil.isCellDateFormatted(cell)) {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-				String strDate = format.format(cell.getDateCellValue());
-				strCell = String.valueOf(strDate);
-			} else {
-				DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
-				strCell = decimalFormat.format(cell.getNumericCellValue());
-			}
-			break;
-		case Cell.CELL_TYPE_BOOLEAN:
-			strCell = String.valueOf(cell.getBooleanCellValue());
-			break;
-		case Cell.CELL_TYPE_FORMULA:
-			strCell = cell.getCellFormula();
-			break;
+			case Cell.CELL_TYPE_STRING:
+				strCell = cell.getStringCellValue();
+				break;
+			case Cell.CELL_TYPE_NUMERIC:
+				if (HSSFDateUtil.isCellDateFormatted(cell)) {
+					SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+					String strDate = format.format(cell.getDateCellValue());
+					strCell = String.valueOf(strDate);
+				} else {
+					DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
+					strCell = decimalFormat.format(cell.getNumericCellValue());
+				}
+				break;
+			case Cell.CELL_TYPE_BOOLEAN:
+				strCell = String.valueOf(cell.getBooleanCellValue());
+				break;
+			case Cell.CELL_TYPE_FORMULA:
+				strCell = cell.getCellFormula();
+				break;
 		}
 		return strCell;
 	};
-	
+
 	/**
 	 * 获取日期格式单元格值
-	 * 
+	 *
 	 * @param String
 	 * @return
 	 */
@@ -129,27 +129,27 @@ public class ExcelUtil {
 		}
 		String strCell = "";
 		switch (cell.getCellType()) {
-		case Cell.CELL_TYPE_NUMERIC:
-			if (HSSFDateUtil.isCellDateFormatted(cell)) {
+			case Cell.CELL_TYPE_NUMERIC:
+				if (HSSFDateUtil.isCellDateFormatted(cell)) {
 
-				try {
-					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-					String strDate = simpleDateFormat.format(cell.getDateCellValue());
-					strCell = String.valueOf(strDate);
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw new PgApplicationException("basedata.date.NumberFormatError", "日期格式不正确，请修改后再进行导入");
+					try {
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+						String strDate = simpleDateFormat.format(cell.getDateCellValue());
+						strCell = String.valueOf(strDate);
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new PgApplicationException("basedata.date.NumberFormatError", "日期格式不正确，请修改后再进行导入");
 
+					}
 				}
-			}
-			break;
+				break;
 		}
 		return strCell;
 	};
-	
+
 	/**
 	 * 复制行
-	 * 
+	 *
 	 * @param startRow 开始行
 	 * @param endRow 结束行
 	 * @param pPosition 目标行
@@ -186,7 +186,7 @@ public class ExcelUtil {
 		for (i = pStartRow; i <= pEndRow; i++) {
 			HSSFRow sourceRow = sheet.getRow(i);
 			if(sourceRow==null) {
-				 sourceRow = sheet.createRow(i);
+				sourceRow = sheet.createRow(i);
 			}
 			columnCount = sourceRow.getLastCellNum();
 			if (sourceRow != null) {
@@ -202,10 +202,10 @@ public class ExcelUtil {
 			}
 		}
 	}
-	
+
 	/**
 	 * 复制单元格
-	 * 
+	 *
 	 * @param srcCell 原始单元格
 	 * @param distCell 目标单元格
 	 */
@@ -237,34 +237,34 @@ public class ExcelUtil {
 
 		}
 	}
-	
-    // 生成字符串的MD5值,用户密码加密
-    public final static String MD5(String s) {
-        char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-        try {
-            byte[] strTemp = s.getBytes("utf-8");
-            MessageDigest mdTemp = MessageDigest.getInstance("MD5");
-            mdTemp.update(strTemp);
-            byte[] md = mdTemp.digest();
-            int j = md.length;
-            char str[] = new char[j * 2];
-            int k = 0;
-            for (int i = 0; i < j; i++) {
-                byte byte0 = md[i];
-                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
-                str[k++] = hexDigits[byte0 & 0xf];
-            }
-            return new String(str);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-    
-    /**
-     * 清除单元格内容
-     * 
-     * @param cell
-     */
+
+	// 生成字符串的MD5值,用户密码加密
+	public final static String MD5(String s) {
+		char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+		try {
+			byte[] strTemp = s.getBytes("utf-8");
+			MessageDigest mdTemp = MessageDigest.getInstance("MD5");
+			mdTemp.update(strTemp);
+			byte[] md = mdTemp.digest();
+			int j = md.length;
+			char str[] = new char[j * 2];
+			int k = 0;
+			for (int i = 0; i < j; i++) {
+				byte byte0 = md[i];
+				str[k++] = hexDigits[byte0 >>> 4 & 0xf];
+				str[k++] = hexDigits[byte0 & 0xf];
+			}
+			return new String(str);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * 清除单元格内容
+	 *
+	 * @param cell
+	 */
 	public static void clearCell(Cell cell) {
 		if (cell == null || cell.toString().trim().equals("")) {
 
@@ -275,38 +275,38 @@ public class ExcelUtil {
 			cell.setCellFormula(null);
 		}
 	}
-    
-    /**
-     * 大写转换小写
-     * 
-     * @param stringIn 文字列
-     * @return 処理後文字列
-     */
-    public static String UpperString(String stringIn) {
-        try {
-            if (stringIn == null) {
-                return "";
-            }
-            return stringIn.toUpperCase();
-        } catch (Exception ex) {
-            return "";
-        }
-    }
 
 	/**
-	 * 
+	 * 大写转换小写
+	 *
+	 * @param stringIn 文字列
+	 * @return 処理後文字列
+	 */
+	public static String UpperString(String stringIn) {
+		try {
+			if (stringIn == null) {
+				return "";
+			}
+			return stringIn.toUpperCase();
+		} catch (Exception ex) {
+			return "";
+		}
+	}
+
+	/**
+	 *
 	 * @param offset 偏移量，如果给0，表示从A列开始，1，就是从B列
 	 * @param rowId 第几行
 	 * @param colCount 一共多少列
 	 * @return 如果给入参 1,1,10. 表示从B1-K1。最终返回 $B$1:$K$1
-	 * 
+	 *
 	 * @author denggonghai 2016年8月31日 下午5:17:49
 	 */
 	public static String getRange(int offset, int satartRow, int rowId, int colCount) {
 		char start = (char)('A' + offset);
 		if (colCount <= 25) {
 			char end = (char)(start + colCount - 1);
-			return "$" + start + "$" + satartRow + ":$:" + end + "$" + rowId;
+			return "$" + start + "$" + satartRow + ":$" + end + "$" + rowId;
 		} else {
 			char endPrefix = 'A';
 			char endSuffix = 'A';
@@ -325,7 +325,7 @@ public class ExcelUtil {
 					endPrefix = (char)(endPrefix + (colCount - 25) / 26);
 				}
 			}
-			return "$" + start + "$" + rowId + ":$:" + endPrefix + endSuffix + "$" + rowId;
+			return "$" + start + "$" + rowId + ":$" + endPrefix + endSuffix + "$" + rowId;
 		}
 	}
 }

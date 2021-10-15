@@ -47,16 +47,7 @@ public class DeployServiceImpl extends BaseService implements DeployService {
                                         .orderByProcessDefinitionVersion().desc()
                                         .listPage((pageNum - 1) * pageSize, pageSize);
 
-
-        Map<String,ProcessDefinition> map = new HashMap<String,ProcessDefinition>();
-
-        if(list != null && list.size() >0){
-            for(ProcessDefinition pd:list){
-                map.put(pd.getId(), pd);
-            }
-        }
-        List<ProcessDefinition> pdList = new ArrayList<ProcessDefinition>(map.values());
-        for (ProcessDefinition processDefinition : pdList) {
+        for (ProcessDefinition processDefinition : list) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id",processDefinition.getId());
             jsonObject.put("key",processDefinition.getKey());

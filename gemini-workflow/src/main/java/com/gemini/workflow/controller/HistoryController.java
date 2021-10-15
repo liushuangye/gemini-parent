@@ -41,6 +41,7 @@ public class HistoryController extends BaseController {
             resultList = geminiHistoryService.findHistory(businessKey);
             restMsg = RestMsg.success("查询成功", resultList);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
             return restMsg;
         }
@@ -60,6 +61,7 @@ public class HistoryController extends BaseController {
             resultList = geminiHistoryService.getHistoryTaskVariables(processInstanceId,executionId,taskId);
             restMsg = RestMsg.success("查询成功", resultList);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
             return restMsg;
         }
@@ -77,6 +79,7 @@ public class HistoryController extends BaseController {
             businessDataStr = geminiHistoryService.getHistoryBusinessData(taskId);
             restMsg = RestMsg.success("查询成功", businessDataStr);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
             return restMsg;
         }

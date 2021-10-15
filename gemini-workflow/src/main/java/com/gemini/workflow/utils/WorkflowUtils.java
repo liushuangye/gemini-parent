@@ -1,6 +1,7 @@
 package com.gemini.workflow.utils;
 
 import com.github.wnameless.json.flattener.JsonFlattener;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.util.Map;
@@ -25,7 +26,7 @@ public class WorkflowUtils {
         }
         //替换掉url中的占位符
         PropertyPlaceholderHelper propertyHelper= new PropertyPlaceholderHelper("${", "}", ":", false);//false
-        str = propertyHelper.replacePlaceholders(str, properties);
+        if(StringUtils.isNotEmpty(str)) str = propertyHelper.replacePlaceholders(str, properties);
         return str;
     }
     /**

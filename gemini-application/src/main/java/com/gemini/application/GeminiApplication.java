@@ -22,3 +22,14 @@ public class GeminiApplication extends SpringBootServletInitializer {
     }
 
 }
+
+//@SpringBootApplication
+//@ComponentScan("com.gemini")
+//@MapperScan("com.gemini.**.mapper")
+//public class GeminiApplication {
+//
+//    public static void main(String[] args) {
+//        SpringApplication.run(GeminiApplication.class, args);
+//    }
+//
+//}

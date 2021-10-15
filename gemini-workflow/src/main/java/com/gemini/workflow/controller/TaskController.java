@@ -41,6 +41,7 @@ public class TaskController extends BaseController {
             resultList = geminiTaskService.findTask(userId,processDefinitionKey);
             restMsg = RestMsg.success("查询成功", resultList);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败:" + e.getMessage(),null);
             return restMsg;
         }
@@ -59,6 +60,7 @@ public class TaskController extends BaseController {
         }catch (ProcessInstanceNotFoundException e) {
             restMsg = RestMsg.response(ProcessInstanceNotFoundException.code,ProcessInstanceNotFoundException.msg,null);
         }catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("完成任务失败:" + e.getMessage(),null);
         }
         return restMsg;
@@ -76,6 +78,7 @@ public class TaskController extends BaseController {
             geminiTaskService.claimTask(taskId,userId);
             restMsg = RestMsg.success("拾取任务成功", "");
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("拾取任务失败:" + e.getMessage(),null);
         }
         return restMsg;
@@ -93,6 +96,7 @@ public class TaskController extends BaseController {
             geminiTaskService.turnTask(taskId, userId);
             restMsg = RestMsg.success("转交任务成功", "");
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("转交任务失败:" + e.getMessage(),null);
 //            log.error("任务转办,异常:{}", e);
         }

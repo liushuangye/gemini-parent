@@ -1,28 +1,32 @@
 package com.gemini.workflow.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.gemini.workflow.DTO.ProcessDTO;
+import com.gemini.workflow.config.SecurityUtil;
 import com.gemini.workflow.entity.User;
 import com.gemini.workflow.mapper.UserMapper;
+import com.gemini.workflow.mapper.WorkflowMapper;
 import com.gemini.workflow.service.BaseService;
 import com.gemini.workflow.service.ProcessService;
 import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
+import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class ProcessServiceImpl extends BaseService implements ProcessService {
     @Resource
     UserMapper userMapper;
+    @Resource
+    WorkflowMapper workflowMapper;
 
     @Override
     public ProcessInstance startWorkflow(ProcessDTO processDTO)  throws Exception{
@@ -43,7 +47,25 @@ public class ProcessServiceImpl extends BaseService implements ProcessService {
         ProcessInstance instance = null;
         instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, businessKey, variables);
 
+        //如果待办人是提交人，且节点key为apply，则完成任务
+        securityUtil.logInAs(processDTO.getUserId());
+        Task applyTask = taskService.createTaskQuery()
+                .taskAssignee(processDTO.getUserId())
+                .taskDefinitionKey("apply")
+                .processInstanceId(instance.getId()).singleResult();
+        if(applyTask != null){
+            taskService.complete(applyTask.getId());
+        }
         return instance;
+    }
+    @Override
+    public List<ProcessInstance> startWorkflowMultiple(List<ProcessDTO> processDTOList)  throws Exception{
+        List<ProcessInstance> list = new ArrayList<ProcessInstance>();
+        for (ProcessDTO processDTO:processDTOList) {
+            ProcessInstance processInstance = startWorkflow(processDTO);
+            list.add(processInstance);
+        }
+        return list;
     }
 
     @Override
@@ -88,5 +110,11 @@ public class ProcessServiceImpl extends BaseService implements ProcessService {
             List<Map<String, String>> resultList = new ArrayList<>();
             runningList.forEach(s -> runtimeService.deleteProcessInstance(s.getId(), "删除"));
         }
+    }
+
+    @Override
+    public List<Map> searchProInstByBusinessKeys(List<String> businessKeys,String userId) throws Exception {
+        List<Map> maps = workflowMapper.searchProInstByBusinessKeys(businessKeys,userId);
+        return maps;
     }
 }

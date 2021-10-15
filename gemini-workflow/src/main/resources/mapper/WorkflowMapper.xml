@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gemini.workflow.mapper.WorkflowMapper">
+
+    <select id="searchProInstByBusinessKeys" resultType="java.util.HashMap">
+        SELECT
+            execution.proc_inst_id_,
+            execution.business_key_,
+            execution.proc_def_id_
+        from act_ru_execution execution
+        WHERE execution.business_key_ IN
+        <choose>
+            <when test="businessKeys.size == 0">
+                (null)
+            </when>
+            <when test="businessKeys.size > 0">
+                <foreach collection="businessKeys" item="business_key" index="index" open="(" close=")" separator=",">
+                    #{business_key}
+                </foreach>
+            </when>
+        </choose>
+        and (
+            exists ( select 1 from act_ru_task task where proc_inst_id_ = execution.proc_inst_id_ and assignee_ = #{userId} )
+            or
+            exists ( select 1 from act_ru_identitylink identitylink where proc_inst_id_ = execution.proc_inst_id_ and user_id_ = #{userId} )
+        )
+    </select>
+
+</mapper>

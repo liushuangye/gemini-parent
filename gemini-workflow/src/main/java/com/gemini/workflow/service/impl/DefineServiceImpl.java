@@ -28,10 +28,8 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -57,17 +55,9 @@ public class DefineServiceImpl extends BaseService implements DefineService {
         ModelQuery modelQuery = repositoryService.createModelQuery();
         if(StringUtils.isNotEmpty(modelName))modelQuery = modelQuery.modelNameLike("%"+modelName+"%");
         long total = modelQuery.count();
-        List<Model> list = modelQuery.listPage((pageNum - 1) * pageSize, pageSize);
+        modelQuery = modelQuery.orderByLastUpdateTime().desc();
+        List<Model> modelList = modelQuery.listPage((pageNum - 1) * pageSize, pageSize);
 
-
-        Map<String,Model> map = new HashMap<String,Model>();
-
-        if(list != null && list.size() >0){
-            for(Model model:list){
-                map.put(model.getId(), model);
-            }
-        }
-        List<Model> modelList = new ArrayList<Model>(map.values());
         for (Model model : modelList) {
             JSONObject metaJson = JSONObject.parseObject(model.getMetaInfo());
             JSONObject jsonObject = new JSONObject();

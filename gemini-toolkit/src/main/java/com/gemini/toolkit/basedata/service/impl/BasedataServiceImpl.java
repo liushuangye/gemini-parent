@@ -88,6 +88,8 @@ public class BasedataServiceImpl implements BasedataService {
 
 
 	@Autowired
+	CommonDataImportService commonDataImportService;/* 通用数据服务，空实现 */
+	@Autowired
 	StandardService standardService;
 	@Autowired
 	AttendMeetingService attendMeetingService;
@@ -125,7 +127,6 @@ public class BasedataServiceImpl implements BasedataService {
 	 * 导入模板
 	 *
 	 * @param request
-	 * @param staffId
 	 * @return
 	 */
 	@Transactional(rollbackFor = Exception.class)
@@ -209,6 +210,10 @@ public class BasedataServiceImpl implements BasedataService {
 						modelFlg, fileName,dbImportType);
 			}else if (CommonConsts.LEARN_HOLD_OFFICE.equals(templateType)){
 				r = learnHoldOfficeService.importExecl(wookbook, templateType, tempalteName, templateTypeName,
+						modelFlg, fileName,dbImportType);
+			} else {
+				// 没有对模板的特殊处理则使用使用通用Service
+				r = commonDataImportService.importExecl(wookbook, templateType, tempalteName, templateTypeName,
 						modelFlg, fileName,dbImportType);
 			}
 			wookbook.close();

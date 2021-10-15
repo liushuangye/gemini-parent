@@ -38,13 +38,14 @@ public class DefineController extends BaseController {
     @Autowired
     private DefineService defineService;
     @PostMapping("listModel")
-    @ApiOperation(value = "查询流程模型", notes = "查询流程模型")
+    @ApiOperation(value = "查询流程模型", notes = "查询流程模型:按更新时间倒排")
     public RestMsg listModel(@RequestBody Map<String,Object> queryparam) {
         RestMsg restMsg = new RestMsg();
         try {
             Map<String, Object> result = defineService.listModel(queryparam);
             restMsg = RestMsg.success("查询成功", result);
         } catch (Exception e) {
+            e.printStackTrace();
             restMsg = RestMsg.fail("查询失败", e.getMessage());
         }
         return restMsg;
@@ -149,6 +150,7 @@ public class DefineController extends BaseController {
             defineService.deleteModel(modelId);
             restMsg = RestMsg.success("删除成功", "");
         }catch (Exception e){
+            e.printStackTrace();
             restMsg = RestMsg.fail("删除失败:" + e.getMessage(),null);
         }
         return restMsg;
